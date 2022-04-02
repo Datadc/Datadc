@@ -1,0 +1,62 @@
+entity Customer {
+	customerID String,
+    name String required,
+    mobile Long,
+    address String,
+    hasAccount Boolean,
+    draftAmount BigDecimal,
+    borrowings BigDecimal
+}
+
+entity CAccount {
+	accountID UUID,
+	draftAmount BigDecimal,
+    borrowings BigDecimal,
+    isActive Boolean
+}
+
+entity Bill {
+	billID String,
+    customerID String,
+    customerName String,
+    date Instant,
+    amount BigDecimal,
+    isPaid Boolean,
+    payMode PaymentMode
+    
+}
+
+enum PaymentMode {
+	CASH, INB, UPI, IBA 
+}
+
+entity PRecord {
+	productID UUID,
+    pName String,
+    quantity Integer,
+    rate Double,
+    amount Double
+}
+
+relationship OneToOne {
+	Customer {has} to CAccount
+}
+
+relationship OneToMany {
+	Customer to Bill,
+    CAccount to Bill
+}
+
+relationship ManyToMany {
+	Bill{billID} to PRecord{productID}
+}
+
+// Set pagination options
+paginate Bill with infinite-scroll
+paginate PRecord, Customer, CAccount with pagination
+
+// Use Data Transfert Objects (DTO)
+dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl
